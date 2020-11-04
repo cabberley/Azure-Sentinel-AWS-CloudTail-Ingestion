@@ -111,6 +111,75 @@ Function Expand-GZipFile {
     $inputfile.Close()
 }
 
+# Code below is to post telemetry Logs, it is not required by Function
+
+#function to create HTTP Header signature required to authenticate post
+Function New-BuildSignature {
+    param(
+        $customerId, 
+        $sharedKey, 
+        $date, 
+        $contentLength, 
+        $method, 
+        $contentType, 
+        $resource )
+    
+    $xHeaders = "x-ms-date:" + $date
+    $stringToHash = $method + "`n" + $contentLength + "`n" + $contentType + "`n" + $xHeaders + "`n" + $resource
+    $bytesToHash = [Text.Encoding]::UTF8.GetBytes($stringToHash)
+    $keyBytes = [Convert]::FromBase64String($sharedKey)
+    $sha256 = New-Object System.Security.Cryptography.HMACSHA256
+    $sha256.Key = $keyBytes
+    $calculatedHash = $sha256.ComputeHash($bytesToHash)
+    $encodedHash = [Convert]::ToBase64String($calculatedHash)
+    $authorization = 'SharedKey {0}:{1}' -f $customerId, $encodedHash
+    return $authorization
+}
+        
+# Function to create and post the request
+Function Invoke-LogAnalyticsData {
+    Param( 
+        $CustomerId, 
+        $SharedKey, 
+        $Body, 
+        $LogTable, 
+        $TimeStampField,
+        $resourceId)
+
+    $method = "POST"
+    $contentType = "application/json"
+    $resource = "/api/logs"
+    $rfc1123date = [DateTime]::UtcNow.ToString("r")
+    $contentLength = $Body.Length
+    $signature = New-BuildSignature `
+        -customerId $CustomerId `
+        -sharedKey $SharedKey `
+        -date $rfc1123date `
+        -contentLength $contentLength `
+        -method $method `
+        -contentType $contentType `
+        -resource $resource
+    $uri = "https://" + $CustomerId + ".ods.opinsights.azure.com" + $resource + "?api-version=2016-04-01"
+    $headers1 = @{
+        "Authorization"        = $signature;
+        "Log-Type"             = $LogTable;
+        "x-ms-date"            = $rfc1123date;
+        "x-ms-AzureResourceId" = $resourceId;
+        "time-generated-field" = $TimeStampField;
+    }  
+    $status = $false
+    do {
+        $response = Invoke-WebRequest -Uri $uri -Method $method -ContentType $contentType -Headers $headers1 -Body $Body
+        If ($reponse.StatusCode -eq 429) {
+            $rand = get-random -minimum 10 -Maximum 80
+            start-sleep -seconds $rand 
+        }
+        else { $status = $true }
+    }until($status) 
+    Remove-variable -name body
+    return $response.StatusCode
+    
+}	   
 IF ($Null -ne $s3Bucket -and $Null -ne $key -and $null -ne $AwsProfile -and $null -ne $Region) {
     $AWSCredentialsS3 = Get-AWSCredential -ProfileName $AWSProfile
     $Telemetry += @{'AwsCredentialsS3' = $AWSProfile }
@@ -121,7 +190,7 @@ IF ($Null -ne $s3Bucket -and $Null -ne $key -and $null -ne $AwsProfile -and $nul
     $fileNameSplit = $s3KeyPath.split('/')
     $fileSplits = $fileNameSplit.Length - 1
     $fileName = $filenameSplit[$fileSplits].replace(':', '_')
-    $result = Copy-S3Object -BucketName $s3Bucket -Key $key -LocalFile "$LocalWorkDir\$filename" -Credential $AWSCredentialsS3 -Region ap-southeast-1 -ErrorAction SilentlyContinue #use s3 creds to collect
+    $result = Copy-S3Object -BucketName $s3Bucket -Key $key -LocalFile "$LocalWorkDir\$filename" -Credential $AWSCredentialsS3 -Region $Region -ErrorAction SilentlyContinue #use s3 creds to collect
     #check if file is compressed and decompress based on file extension
     if ($result.Extension -eq '.gz' ) {
         $null = 
