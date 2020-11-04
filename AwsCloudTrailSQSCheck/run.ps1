@@ -25,7 +25,7 @@
 # Input bindings are passed in via param block.
 param([string] $QueueItem, $TriggerMetadata)
 # Get the current universal time in the default string format.
-$currentUTCtime = (Get-Date).ToUniversalTime()
+$startUTCtime = (Get-Date).ToUniversalTime()
 $QueueItems = $QueueItem.split(';')
 $AWSSQSQueueName = $QueueItems[0]
 $AWSRegion = $QueueItems[1]
@@ -126,7 +126,7 @@ DO {
     }
     #check on time running, Azure Function default timeout is 5 minutes, if we are getting close exit function cleanly now and get more records next execution
     $currentUTCtime = (Get-Date).ToUniversalTime()
-    $Diff = NEW-TIMESPAN -Start $StartUTCtime -End $currentUTCtime
+    $Diff = NEW-TIMESPAN -Start $startUTCtime -End $currentUTCtime
     If ($Diff.TotalSeconds -gt 270) { $EndAWSSQSMessages = $true}
 }until ($EndAWSSQSMessages)
 $Telemetry += @{"MessageDetails" = $TelemetrySQS}
