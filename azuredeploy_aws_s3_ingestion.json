@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "FunctionName": {
-      "defaultValue": "AWS-CT-Ingestion",
+      "defaultValue": "AWSCTLogs",
       "type": "string",
       "metadata": {
         "description": "Specifies the name of the Function App."
@@ -25,14 +25,14 @@
     },
     "TelemetryWorkspaceId": {
       "type": "string",
-      "defaultValue": "<WorkspaceId>",
+      "defaultValue": "<TelemetryWorkspaceId>",
       "metadata": {
         "description": "Specifies the Telemetry Log Analytics Workspace Id."
       }
     },
     "TelemetryWorkspaceKey": {
       "type": "string",
-      "defaultValue": "<WorkspaceKey>",
+      "defaultValue": "<TelemetryWorkspaceKey>",
       "metadata": {
         "description": "Specifies the Telemetry Log Analytics Workspace Key."
       }
@@ -197,7 +197,7 @@
             "SQSCloudTrailQueueName": "[parameters('SQSCloudTrailQueueName')]",
             "SQSConfig": "[parameters('StorageAccountTableName')]",
             "timeInterval": "[parameters('TimeInterval')]",
-            "WEBSITE_RUN_FROM_PACKAGE": "https://aka.ms/githubazurefunctionzip"
+            "WEBSITE_RUN_FROM_PACKAGE": "https://aka.ms/awsctingestionazurefunctionzip"
           }
         }
       ]
