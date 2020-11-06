@@ -113,7 +113,7 @@
         "workerSize": "3",
         "workerSizeId": "3",
         "numberOfWorkers": "1",
-        "maximumElasticWorkerCount": "20"
+        "maximumElasticWorkerCount": 20
       }
     },
     {
