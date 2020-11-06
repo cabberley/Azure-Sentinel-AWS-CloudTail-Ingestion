@@ -1,31 +1,35 @@
-# Azure Sentinel AWS CloudTail Ingestion
+# AWS CloudTail Ingestion configuration steps
  
-Azure Function Application settings required
-1. AzureCloudTrailQueueName  - Name of the queue on your local Azure Function Storage Account default name - 'awscloudqueue'
-2. SQSCloudTrailQueueName - Name of the Azure Storage queue with the list of SQS queues to check default name - 'sqsqueues'
-3. TelemetryWorkspace - Log Ananlytics workspace for storing telemetry\logs of the azure function
-4. TelemetryWorkspaceKey
-5. WorkspaceID - Azure Sentinel Log Analytics workspace details
-6. WorkspaceKey
-7. SQSConfig = Name of the AzureStorage Table to read the SQS configs from, default name 'cloudtrailconfigs'
-8. Create a directory on the Azure Function Azure File Share 'D:\home\.aws' and create file called 'credentials' and add the following entries with your values
-	[myprofile]
-	aws_access_key_id = <<AWS Access Key>>
-	aws_secret_access_key = <<AWS Secret AccessKey>>
-	
+1. Create a directory on the Azure Function File Share D:\home\data\Cloudtrailworking
+
+2. Create a directory on the Azure Function File Share D:\home\.aws and create file called 'credentials' and add AWS Credentials
+	```
 	[myprofile1]
 	aws_access_key_id = <<AWS Access Key>>
 	aws_secret_access_key = <<AWS Secret AccessKey>>
-
-9. Create a Storage Table Called 'cloudtrailconfigs'
-	Sample table. Field Names MUST keep Capitalisation exactly as below:
 	
-	| PartitionKey | RowKey  | sqsQueueName                                                           	  | AwsRegion | AwsProfileSQS | AwsProfileS3 |
+	[myprofile2]
+	aws_access_key_id = <<AWS Access Key>>
+	aws_secret_access_key = <<AWS Secret AccessKey>>
+	```
+	Note: Steps 1 & 2 can be created by using Azure Storage explorer/Kudu to the root of the Azure function file share
+
+3. Go to Storage Table 'cloudtrailconfigs' and add the following columns/properties using Azure Storage explorer
+   Field Names MUST keep Capitalisation exactly as below:
+   ```
+   sqsQueueName
+   AwsRegion
+   AwsProfileSQS
+   AwsProfileS3
+   ```
+	
+	| PartitionKey | RowKey  |                             sqsQueueName                                   | AwsRegion | AwsProfileSQS | AwsProfileS3 |
     |--------------|---------|----------------------------------------------------------------------------|-----------|---------------|--------------|
 	| Partition1   | Config1 | https://sqs.ap-southeast-1.amazonaws.com/999999999999/cloudtrail-001-queue | us-east-2 | myprofile1    | myprofile1   |
 	| Partition1   | Config2 | https://sqs.ap-southeast-1.amazonaws.com/999999999999/cloudtrail-001-queue | us-east-2 | myprofile2    | myprofile2   |
 	| Partition1   | Config3 | https://sqs.ap-southeast-1.amazonaws.com/999999999999/cloudtrail-001-queue | us-east-2 | myprofile3    | myprofile3   |
 
-10.	Create 2 storage queues on the loca Storage Account
-	1. 'sqsqueues'
-	2. 'awscloudqueue'
+## Deploy Function App
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fandedevsecops%2FAzure-Sentinel%2Faz-func-validation%2FDataConnectors%2FValidateDeployment%2Fazuredeploy_aws_s3_ingestion.json" target="_blank">
+    <img src="https://aka.ms/deploytoazurebutton"/>
+</a>
