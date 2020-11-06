@@ -30,6 +30,6 @@
 	| Partition1   | Config3 | https://sqs.ap-southeast-1.amazonaws.com/999999999999/cloudtrail-001-queue | us-east-2 | myprofile3    | myprofile3   |
 
 ## Deploy Function App
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fgithub.com%2Fcabberley%2FAzure-Sentinel-AWS-CloudTail-Ingestion%2Fblob%2Fbugfixes%2Fazuredeploy_aws_s3_ingestion.json" target="_blank">
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fandedevsecops%2Fmycustomdataconnector%2Fmaster%2Fazuredeploy_aws_s3_ingestion.json" target="_blank">
     <img src="https://aka.ms/deploytoazurebutton""/>
 </a>
