@@ -2,7 +2,7 @@
  
 1. Create a directory on the Azure Function File Share D:\home\data\Cloudtrailworking
 
-2. Create a directory on the Azure Function File Share D:\home\.aws and create file called 'credentials' and add AWS Credentials
+2. Create a directory on the Azure Function File Share D:\home\\.aws and create file called 'credentials' and add AWS Credentials
 	```
 	[myprofile1]
 	aws_access_key_id = <<AWS Access Key>>
@@ -13,6 +13,7 @@
 	aws_secret_access_key = <<AWS Secret AccessKey>>
 	```
 	Note: Steps 1 & 2 can be created by using Azure Storage explorer/Kudu to the root of the Azure function file share
+	Note: If you are using AWS Assumed Roles you will also need to create a 'config' file in the .aws directory as well.
 
 3. Go to Storage Table 'cloudtrailconfigs' and add the following columns/properties using Azure Storage explorer
    Field Names MUST keep Capitalisation exactly as below:
