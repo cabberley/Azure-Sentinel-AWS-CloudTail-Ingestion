@@ -13,6 +13,7 @@
 	aws_secret_access_key = <<AWS Secret AccessKey>>
 	```
 	Note: Steps 1 & 2 can be created by using Azure Storage explorer/Kudu to the root of the Azure function file share
+	
 	Note: If you are using AWS Assumed Roles you will also need to create a 'config' file in the .aws directory as well.
 
 3. Go to Storage Table 'cloudtrailconfigs' and add the following columns/properties using Azure Storage explorer
